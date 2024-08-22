@@ -81,6 +81,19 @@
             }
         }
 
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                birthdate: params.get('birthdate')
+            };
+        }
+
+        const queryParams = getQueryParams();
+        if (queryParams.birthdate) {
+            birthdateInput.value = queryParams.birthdate;
+            updateGrid();
+        }
+
         birthdateInput.addEventListener('change', updateGrid);
     </script>
 </body>
