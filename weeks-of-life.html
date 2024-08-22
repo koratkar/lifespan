@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifespan Grid Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        #grid {
+            display: flex;
+            gap: 1px;
+            border: 1px solid #ccc;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            width: 10px;
+        }
+        .square {
+            width: 8px;
+            height: 8px;
+            border: 1px solid #ccc;
+        }
+        #birthdate {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lifespan Grid Visualization</h1>
+    <p>Each column represents a year, filled from top to bottom.</p>
+    <input type="date" id="birthdate">
+    <div id="grid"></div>
+
+    <script>
+        const grid = document.getElementById('grid');
+        const birthdateInput = document.getElementById('birthdate');
+        const totalYears = 80;
+        const weeksPerYear = 52;
+
+        // Create grid
+        for (let year = 0; year < totalYears; year++) {
+            const column = document.createElement('div');
+            column.classList.add('column');
+            for (let week = 0; week < weeksPerYear; week++) {
+                const square = document.createElement('div');
+                square.classList.add('square');
+                column.appendChild(square);
+            }
+            grid.appendChild(column);
+        }
+
+        function updateGrid() {
+            const birthdate = new Date(birthdateInput.value);
+            const today = new Date();
+            const ageInWeeks = Math.floor((today - birthdate) / (7 * 24 * 60 * 60 * 1000));
+            const columns = grid.getElementsByClassName('column');
+
+            for (let year = 0; year < totalYears; year++) {
+                const column = columns[year];
+                const squares = column.getElementsByClassName('square');
+                
+                // Calculate gradient color based on year
+                const hue = 120 - (120 * year / totalYears);
+                const gradientColor = `hsl(${hue}, 100%, 50%)`;
+
+                for (let week = 0; week < weeksPerYear; week++) {
+                    const weekIndex = year * weeksPerYear + week;
+                    if (weekIndex < ageInWeeks) {
+                        squares[week].style.backgroundColor = '#4CAF50'; // Lived weeks
+                    } else {
+                        squares[week].style.backgroundColor = gradientColor; // Future weeks
+                    }
+                }
+            }
+        }
+
+        birthdateInput.addEventListener('change', updateGrid);
+    </script>
+</body>
+</html>
