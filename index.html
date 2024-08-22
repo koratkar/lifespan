@@ -27,14 +27,24 @@
             height: 8px;
             border: 1px solid #ccc;
         }
-        #birthdate {
+
+/* CSS for completed squares with moiré pattern */
+.square.completed {
+    background-color: #000; /* Dark background */
+    background-image: 
+        linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent),
+        linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
+    background-size: 4px 4px;
+    opacity: 0.8; /* Make sure the effect is visible */
+}
+#birthdate {
             margin: 20px 0;
         }
     </style>
 </head>
 <body>
     <h1>Lifespan Grid Visualization</h1>
-    <p>Each column represents a year, filled from top to bottom.</p>
+    <p>Each column represents a year, filled from top to bottom. Gradient represents expected health over 80 years.</p>
     <input type="date" id="birthdate">
     <div id="grid"></div>
 
@@ -59,6 +69,13 @@
         function updateGrid() {
             const birthdate = new Date(birthdateInput.value);
             const today = new Date();
+
+            if ('URLSearchParams' in window) {
+                 const url = new URL(window.location)
+                 url.searchParams.set("birthdate", birthdate.toISOString().substring(0,10))
+                 history.pushState(null, '', url);
+            }
+
             const ageInWeeks = Math.floor((today - birthdate) / (7 * 24 * 60 * 60 * 1000));
             const columns = grid.getElementsByClassName('column');
 
@@ -67,13 +84,16 @@
                 const squares = column.getElementsByClassName('square');
                 
                 // Calculate gradient color based on year
-                const hue = 120 - (120 * year / totalYears);
-                const gradientColor = `hsl(${hue}, 100%, 50%)`;
+                const hue = 200 + (40 * year / totalYears);
+                const opacity = 100 - (100 * (year / totalYears) * (year / totalYears));
+                const gradientColor = `hsl(${hue}, ${opacity}%, 50%)`;
 
                 for (let week = 0; week < weeksPerYear; week++) {
                     const weekIndex = year * weeksPerYear + week;
                     if (weekIndex < ageInWeeks) {
-                        squares[week].style.backgroundColor = '#4CAF50'; // Lived weeks
+                        squares[week].style.backgroundColor = "#0a0a0a";
+                        squares[week].classList.add('completed');
+
                     } else {
                         squares[week].style.backgroundColor = gradientColor; // Future weeks
                     }
